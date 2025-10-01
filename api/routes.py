@@ -172,8 +172,6 @@ async def upload_document(
 
         logger.info(f"File saved to: {file_path}, type: {type(file_path)}")
 
-        rag_system = SimpleRAGSystem()
-        
         chunk_count = await rag_system.add_documents([file_path])
         
         # Create document record
