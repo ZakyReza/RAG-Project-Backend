@@ -9,7 +9,6 @@ from config import settings
 import asyncio
 import mimetypes
 import logging
-
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 
@@ -20,11 +19,8 @@ logger = logging.getLogger(__name__)
 class SimpleRAGSystem:
     def __init__(self):
         # Initialize embeddings based on config
-        if settings.use_ollama_embeddings:
-            self.embeddings = HuggingFaceEmbeddings(model_name=settings.embedding_model)
-        else:
-            self.embeddings = HuggingFaceEmbeddings(model_name=settings.embedding_model)
-        
+        self.embeddings = HuggingFaceEmbeddings(model_name=settings.embedding_model)
+    
         # Initialize vector store
         self.vectorstore = Chroma(
             persist_directory=str(settings.chroma_persist_dir),
@@ -144,18 +140,12 @@ class SimpleRAGSystem:
         # Get response
         response = await asyncio.to_thread(chain.invoke, question)
         
-        # Extract content (handle different response types)
-        if hasattr(response, 'content'):
-            content = response.content
-        else:
-            content = str(response)
-        
         # Save AI response to memory
         if memory and hasattr(memory, 'chat_memory'):
-            memory.chat_memory.add_ai_message(content)
+            memory.chat_memory.add_ai_message(response)
         
         return {
-            "answer": content,
+            "answer": response,
             "conversation_id": conversation_id
         }
     

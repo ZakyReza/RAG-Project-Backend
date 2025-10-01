@@ -55,6 +55,7 @@ class DocumentProcessor:
             }
     
     def _get_loader(self, file_path: str, file_type: str):
+
         """Get appropriate document loader based on file type"""
         if file_type == "application/pdf":
             return PyPDFLoader(file_path)

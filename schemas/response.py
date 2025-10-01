@@ -28,13 +28,3 @@ class DocumentResponse(BaseModel):
     chunk_count: int
     processed: bool
     uploaded_at: datetime
-
-class HealthResponse(BaseModel):
-    status: str
-    timestamp: datetime
-    version: str
-
-class SearchResult(BaseModel):
-    content: str
-    metadata: Dict[str, Any]
-    relevance_score: float
