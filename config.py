@@ -1,6 +1,7 @@
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
+import os
 
 class Settings(BaseSettings):
     """Application settings with Pydantic native environment parsing"""
@@ -21,13 +22,13 @@ class Settings(BaseSettings):
     
     # Database Configuration
     database_url: str = Field(
-        default="sqlite:///./chatbot.db",
-        description="Database connection URL"
-    )
+    default= os.getenv("DATABASE_URL"),
+    description="Database connection URL"
+)
      
     # Universal LLM Settings
     llm_model: str = Field(
-        default="qwen2:0.5b",
+        default= os.getenv("LLM_MODEL"),
         description="Model name to use"
     )
     
@@ -47,12 +48,12 @@ class Settings(BaseSettings):
     
     # Ollama Configuration
     ollama_base_url: str = Field(
-        default="http://localhost:11434",
+        default= os.getenv("OLLAMA_BASE_URL"), 
         description="Ollama API base URL"
     )
     
     embedding_model: str = Field(
-        default="all-MiniLM-L6-v2",
+        default= os.getenv("EMBEDDING_MODEL"),
         description="Embedding model name"
     )
     

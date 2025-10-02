@@ -8,30 +8,13 @@ from config import settings
 
 logger = logging.getLogger(__name__)
 
-# Create connection arguments
-connect_args = {}
-if "sqlite" in settings.database_url:
-    connect_args = {"check_same_thread": False}
-
 # Create engine with proper settings
 engine = create_engine(
     settings.database_url,
-    connect_args=connect_args,
     echo=(settings.log_level == "DEBUG"),
     pool_pre_ping=True,
     pool_recycle=3600,
 )
-
-# Enable WAL mode for SQLite for better concurrency
-if "sqlite" in settings.database_url:
-    @event.listens_for(engine, "connect")
-    def set_sqlite_pragma(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA journal_mode=WAL;")
-        cursor.execute("PRAGMA synchronous=NORMAL;")
-        cursor.execute("PRAGMA cache_size=10000;")
-        cursor.execute("PRAGMA temp_store=MEMORY;")
-        cursor.close()
 
 # Create tables at startup
 Base.metadata.create_all(bind=engine)

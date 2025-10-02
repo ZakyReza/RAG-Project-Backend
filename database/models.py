@@ -35,7 +35,7 @@ class Message(Base):
     conversation_id = Column(Integer, ForeignKey("conversations.id", ondelete="CASCADE"), nullable=False)
     role = Column(String(20), nullable=False)
     content = Column(Text, nullable=False)
-    retrieval_sources = Column(Text, nullable=True)
+    retrieval_sources = Column(Text, nullable=True, default='[]')
     timestamp = Column(DateTime, default=func.now(), nullable=False)
     
     conversation = relationship("Conversation", back_populates="messages")
@@ -48,12 +48,21 @@ class Message(Base):
     )
     
     def to_dict(self):
+        try:
+            # Safely parse retrieval_sources from JSON string to list
+            if self.retrieval_sources:
+                sources = json.loads(self.retrieval_sources)
+            else:
+                sources = []
+        except (json.JSONDecodeError, TypeError, ValueError):
+            sources = []  # Fallback to empty list
+
         return {
             'id': self.id,
             'conversation_id': self.conversation_id,
             'role': self.role,
             'content': self.content,
-            'retrieval_sources': json.loads(self.retrieval_sources) if self.retrieval_sources else [],
+            'retrieval_sources': sources,
             'timestamp': self.timestamp,
         }
 

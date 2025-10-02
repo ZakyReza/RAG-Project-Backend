@@ -53,6 +53,7 @@ async def get_messages(
     messages = db.query(Message).filter(
         Message.conversation_id == conversation_id
     ).order_by(Message.timestamp).all()
+
     return messages
 
 @router.post("/conversations/{conversation_id}/chat", response_model=ChatResponse)
@@ -80,7 +81,8 @@ async def chat(
         user_message = Message(
             conversation_id=conversation_id,
             role="user",
-            content=message.content
+            content=message.content,
+            retrieval_sources='[]'
         )
         db.add(user_message)
         db.commit()
@@ -94,7 +96,7 @@ async def chat(
             conversation_id=conversation_id,
             role="assistant",
             content=result["answer"],
-            retrieval_sources=json.dumps([])  
+            retrieval_sources=json.dumps(result.get("sources_used", []))
         )
         db.add(ai_message)
         
@@ -135,7 +137,7 @@ async def chat(
             conversation_id=conversation_id,
             message=ai_message.to_dict(),
             answer=result["answer"],
-            sources_used=[]
+            sources_used=result.get("sources_used", [])
         )
         
     except Exception as e:
