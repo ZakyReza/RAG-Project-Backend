@@ -12,7 +12,7 @@ from core.rag_system import SimpleRAGSystem
 from schemas.request import ConversationCreate, MessageCreate 
 from schemas.response import ConversationResponse, MessageResponse, ChatResponse, DocumentResponse
 from utils.file_handlers import file_handler
-from api.websockets import websocket_endpoint, manager
+
 
 router = APIRouter()
 rag_system = SimpleRAGSystem()
